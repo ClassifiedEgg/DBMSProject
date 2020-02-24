@@ -33,8 +33,10 @@ const UserSchema = new mongoose.Schema({
     },
     workouts: [
         {
-            type: mongoose.Types.ObjectId,
-            ref: 'workout'
+            workout: {
+                type: mongoose.Types.ObjectId,
+                ref: 'workout'
+            }
         }
     ],
     diet: [

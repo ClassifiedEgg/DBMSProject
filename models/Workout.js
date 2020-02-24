@@ -19,6 +19,16 @@ const WorkoutSchema = new mongoose.Schema({
     date: {
         type: Date,
         required: true
+    },
+    madeBy: {
+        userID: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        },
+        userName: {
+            type: String,
+            required: true
+        }
     }
 })
 
