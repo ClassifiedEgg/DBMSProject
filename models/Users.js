@@ -39,7 +39,7 @@ const UserSchema = new mongoose.Schema({
             }
         }
     ],
-    diet: [
+    diets: [
         {
             type: mongoose.Types.ObjectId,
             ref: 'diet'

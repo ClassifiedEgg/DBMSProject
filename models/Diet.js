@@ -2,13 +2,19 @@
 const mongoose = require('mongoose')
 
 const DietSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
     macros: [
         {
             name: {
-                type: String
+                type: String,
+                required: true
             },
             value: {
-                type: Number
+                type: Number,
+                required: true
             }
         }
     ],
@@ -28,9 +34,19 @@ const DietSchema = new mongoose.Schema({
             }
         }
     ],
+    madeBy: {
+        userID: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        },
+        userName: {
+            type: String,
+            required: true
+        }
+    },
     date: {
         type: Date,
-
+        default: Date.now()
     }
 })
 

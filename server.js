@@ -14,6 +14,7 @@ app.use(express.json({ extended: false }));
 app.use("/api/users", require('./routes/api/users'))
 app.use("/api/auth", require('./routes/api/auth'))
 app.use("/api/workouts", require('./routes/api/workout'))
+app.use("/api/diets", require('./routes/api/diet'))
 
 
 // Serve static assets in production

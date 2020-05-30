@@ -16,7 +16,7 @@ router.post(
         auth,
         check("name", "Please enter a exercise name")
             .notEmpty(),
-        check("detials", "Please enter some valid details about the exercise")
+        check("details", "Please enter some valid details about the exercise")
             .notEmpty()
     ],
     async (req, res) => {
@@ -60,12 +60,12 @@ router.post(
     }
 )
 
-// GET api/workouts/:name/:wkid
+// GET api/workouts/:name/
 // Get all workouts of a user
 // Private route
 
 router.get(
-    "/:name/:wkid",
+    "/:name/",
     auth,
     async (req, res) => {
         try {
