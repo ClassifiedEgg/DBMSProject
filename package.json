@@ -1,20 +1,26 @@
 {
-  "name": "DBMS",
+  "name": "dbms",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:server": "nodemon server.js",
+    "start:client": "cd client && npm run start",
+    "start": "concurrently npm:start:*"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-validator": "^6.4.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.5.3",
     "mongoose": "^5.9.1"
+  },
+  "devDependencies": {
+    "concurrently": "^5.2.0"
   }
 }

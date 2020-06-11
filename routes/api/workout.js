@@ -6,17 +6,17 @@ const auth = require("../../middleware/auth");
 const Workout = require("../../models/Workout");
 const User = require("../../models/User");
 
-// POST api/workouts/:user/
+// POST api/workouts/
 // Make a new workout
 // Private route
 
 router.post(
-    "/:user",
+    "/",
     [
         auth,
-        check("name", "Please enter a exercise name")
+        check("workoutName", "Please enter a exercise name")
             .notEmpty(),
-        check("details", "Please enter some valid details about the exercise")
+        check("allExercises", "Please enter some valid details about the exercise")
             .notEmpty()
     ],
     async (req, res) => {
@@ -26,10 +26,10 @@ router.post(
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { exerciseName, detials } = req.body
+        const { workoutName, allExercises } = req.body
 
         try {
-            const user = await User.findOne(req.params.user).select("-password");
+            const user = await User.findById(req.user.id);
 
             if (!user) {
                 return res.status(404).json({ msg: "User not found" })
@@ -37,13 +37,13 @@ router.post(
 
             let madeBy = {
                 userID: req.user.id,
-                userName: req.user.name
+                username: req.user.name
             }
 
             const newWorkout = new Workout({
                 madeBy,
-                exerciseName,
-                detials
+                workoutName,
+                allExercises
             });
 
             const workout = await newWorkout.save();
@@ -60,20 +60,39 @@ router.post(
     }
 )
 
-// GET api/workouts/:name/
+// GET api/workouts/
 // Get all workouts of a user
 // Private route
 
 router.get(
-    "/:name/",
+    "/",
     auth,
     async (req, res) => {
         try {
-            let user = await User.findOne(req.user.params).populate("workouts")
+            let user = await User.findById(req.user.id).populate("workouts.workout")
 
             let allWorkouts = user.workouts
 
             res.json(allWorkouts)
+        } catch (err) {
+            console.error(err.message);
+            return res.status(500).send("Server error")
+        }
+    }
+)
+
+// GET api/workouts/:wkid
+// Get a workout
+// Private route
+
+router.get(
+    "/:wkid",
+    auth,
+    async (req, res) => {
+        try {
+            let workout = await Workout.findById(req.params.wkid)
+
+            res.json(workout)
         } catch (err) {
             console.error(err.message);
             return res.status(500).send("Server error")
@@ -86,24 +105,22 @@ router.get(
 // Private route
 
 router.delete(
-    "/:name/:wkid",
+    "/:wkId",
     auth,
     async (req, res) => {
         try {
-            let workout = await Workout.findById(req.params.wkid);
+            let workout = await Workout.findById(req.params.wkId);
             let user = await User.findById(req.user.id)
 
-            if (!post) {
+            if (!workout) {
                 return res.status(404).json({ msg: "Workout not found" });
             }
 
-            if (post.user.toString() !== req.user.id) {
+            if (workout.madeBy.userID.toString() !== req.user.id) {
                 return res.status(500).json({ msg: "Unauthorized" })
             }
 
-            let removeIndex = user.workouts.find(({ workout }) => workout === req.params.postid)
-
-            user.workouts.splice(removeIndex, 1)
+            user.workouts = user.workouts.filter(({ workout }) => workout.toString() !== req.params.wkId)
 
             await user.save()
 
@@ -117,18 +134,14 @@ router.delete(
     }
 )
 
-// PUT api/workouts/:name/:wkid
+// PUT api/workouts/:wkid
 // Edit a workout
 // Private route
 
 router.put(
-    "/:name/:wkid",
+    "/:wkid",
     [
-        auth,
-        check("name", "Please enter a exercise name")
-            .notEmpty(),
-        check("detials", "Please enter some valid details about the exercise")
-            .notEmpty()
+        auth
     ],
     async (req, res) => {
         const errors = validationResult(req);
@@ -137,15 +150,9 @@ router.put(
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { exerciseName, detials } = req.body
+        const { workoutName, allExercises } = req.body
 
         try {
-            let user = await User.findOne({ name: req.params.name })
-
-            if (!user) {
-                return res.status(404).json({ msg: "User not found" })
-            }
-
             let workout = await Workout.findById(req.params.wkid);
 
             if (!workout) {
@@ -157,7 +164,7 @@ router.put(
             }
 
             let newWorkout = await Workout.findByIdAndUpdate(req.params.wkid,
-                { exerciseName, detials }, { new: true });
+                { workoutName, allExercises }, { new: true });
 
             res.json(newWorkout)
         } catch (err) {
@@ -166,3 +173,5 @@ router.put(
         }
     }
 )
+
+module.exports = router

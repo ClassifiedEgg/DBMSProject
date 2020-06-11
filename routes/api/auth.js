@@ -50,14 +50,14 @@ router.post(
         const { username, password } = req.body;
 
         try {
-            let user = await User.findOne({ name })
+            let user = await User.findOne({ username })
 
             // See if user exists
             if (!user) {
                 return res.status(404).json({ errors: [{ msg: "Please check username and password" }] })
             }
 
-            const isMatch = bcrpyt.compare(password, user.password);
+            const isMatch = await bcrpyt.compare(password, user.password);
 
             if (!isMatch) {
                 return res.status(404).json({ errors: [{ msg: "Please check username and password" }] })
@@ -67,7 +67,7 @@ router.post(
             const payload = {
                 user: {
                     id: user.id,
-                    name: user.name
+                    name: user.username
                 }
             };
 
@@ -83,7 +83,7 @@ router.post(
 
         } catch (err) {
             console.error(err.message);
-            return res.send(500).send("Server error")
+            return res.status(500).send("Server error")
         }
 
     }

@@ -22,6 +22,8 @@ router.post(
             .notEmpty(),
         check("age", "Please enter a valid age")
             .notEmpty().isFloat({ min: 0 }),
+        check("gender", "Please choose a gender")
+            .notEmpty(),
         check("weight", "Please enter a valid weight")
             .notEmpty().isFloat({ min: 0 }),
         check("height", "Please enter a valid height")
@@ -42,7 +44,7 @@ router.post(
         let { username, firstName, lastName, age, weight, height, email, password } = req.body;
 
         try {
-            let user = await User.findOne({ $or: [{ name }, { email }] });
+            let user = await User.findOne({ $or: [{ username }, { email }] });
 
             if (user) {
                 return res
@@ -51,8 +53,6 @@ router.post(
             }
 
             // Make new User
-
-            if (!avatar) avatar = '';
 
             user = new User({
                 username,

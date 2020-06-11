@@ -1,8 +1,9 @@
 // cals and macros, bf, dinner, lunhc, snacks, drinks, water, date, 
 const mongoose = require('mongoose')
+const Schema = mongoose.Schema;
 
 const DietSchema = new mongoose.Schema({
-    name: {
+    dietName: {
         type: String,
         required: true,
     },
@@ -18,18 +19,14 @@ const DietSchema = new mongoose.Schema({
             }
         }
     ],
-    food: [
+    allMeals: [
         {
-            item: {
+            name: {
                 type: String,
                 required: true
             },
-            servings: {
+            kcal: {
                 type: String,
-                required: true
-            },
-            time: {
-                type: Date,
                 required: true
             }
         }
@@ -50,4 +47,6 @@ const DietSchema = new mongoose.Schema({
     }
 })
 
-module.exports = Diet = mongoose.Schema("diet", DietSchema)
+const Diet = mongoose.model("diet", DietSchema)
+
+module.exports = Diet

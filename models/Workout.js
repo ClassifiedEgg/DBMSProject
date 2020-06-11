@@ -1,35 +1,41 @@
 // Name of the exercise, date, parts of the body worked on, cals burnt, reps, 
 const mongoose = require('mongoose')
+const Schema = mongoose.Schema;
 
-const WorkoutSchema = new mongoose.Schema({
-    exerciseName: {
+const WorkoutSchema = new Schema({
+    workoutName: {
         type: String,
         required: true
     },
-    details: [
+    allExercises: [
         {
-            reps: {
-                type: Number
+            name: {
+                type: String,
+                required: true
             },
-            load: {
-                type: Number
+            reps: {
+                type: Number,
+                required: true
             }
         }
     ],
     date: {
         type: Date,
-        required: true
+        required: true,
+        default: Date.now()
     },
     madeBy: {
         userID: {
             type: Schema.Types.ObjectId,
             ref: 'user'
         },
-        userName: {
+        username: {
             type: String,
             required: true
         }
     }
 })
 
-module.exports = Workout = mongoose.Schema("workout", WorkoutSchema)
+const Workout = mongoose.model("workout", WorkoutSchema)
+
+module.exports = Workout

@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
-const config = require('../config/defualt')
+const config = require('./default')
+
+console.log(config.mongoDBURI)
 
 const connectDB = async () => {
   try {

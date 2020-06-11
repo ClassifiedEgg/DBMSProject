@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Schema = mongoose.Schema;
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -31,18 +32,24 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    password: {
+        type: String,
+        required: true
+    },
     workouts: [
         {
             workout: {
-                type: mongoose.Types.ObjectId,
+                type: Schema.Types.ObjectId,
                 ref: 'workout'
             }
         }
     ],
     diets: [
         {
-            type: mongoose.Types.ObjectId,
-            ref: 'diet'
+            diet: {
+                type: Schema.Types.ObjectId,
+                ref: 'diet'
+            }
         }
     ],
     createdOn: {
@@ -51,4 +58,6 @@ const UserSchema = new mongoose.Schema({
     }
 })
 
-module.exports = User = mongoose.Schema("user", UserSchema)
+const User = mongoose.model("user", UserSchema)
+
+module.exports = User

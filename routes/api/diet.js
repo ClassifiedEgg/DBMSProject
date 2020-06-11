@@ -6,20 +6,14 @@ const auth = require("../../middleware/auth");
 const Diet = require("../../models/Diet");
 const User = require("../../models/User");
 
-// POST api/workouts/:user/
+// POST api/diets/
 // Make a new diet
 // Private route
 
 router.post(
-  "/:user",
+  "/",
   [
-    auth,
-    check("name", "Please enter a diet name")
-      .notEmpty(),
-    check("macros", "Please enter some valid details about the diet")
-      .notEmpty(),
-    check("food", "Please enter some food in your diet")
-      .notEmpty()
+    auth
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -28,7 +22,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, macros, food } = req.body
+    const { dietName, allMeals } = req.body
 
     try {
       const user = await User.findOne(req.params.user).select("-password");
@@ -43,14 +37,13 @@ router.post(
       }
 
       const newDiet = new Diet({
-        name,
-        macros,
-        food,
+        dietName,
+        allMeals,
         madeBy
       });
 
       const diet = await newDiet.save();
-
+      
       user.diets.unshift({ diet: diet.id })
 
       await user.save();
@@ -63,16 +56,16 @@ router.post(
   }
 )
 
-// GET api/diet/:name/
+// GET api/diets/
 // Get all diets of a user
 // Private route
 
 router.get(
-  "/:name/",
+  "/",
   auth,
   async (req, res) => {
     try {
-      let user = await User.findOne(req.user.params).populate("diets")
+      let user = await User.findById(req.user.id).populate("diets.diet")
 
       let allDiets = user.diets
 
@@ -84,29 +77,46 @@ router.get(
   }
 )
 
-// DELETE api/workouts/:name/:did
+// GET api/diets/:dietId
+// Get a diet
+// Private route
+
+router.get(
+  "/:dietId",
+  auth,
+  async (req, res) => {
+    try {
+      let diet = await Diet.findById(req.params.dietId)
+
+      res.json(diet)
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).send("Server error")
+    }
+  }
+)
+
+// DELETE api/diets/:did
 // Delete a diet
 // Private route
 
 router.delete(
-  "/:name/:wkid",
+  "/:dietId",
   auth,
   async (req, res) => {
     try {
-      let diet = await Diet.findById(req.params.dif);
+      let diet = await Diet.findById(req.params.dietId);
       let user = await User.findById(req.user.id)
 
-      if (!post) {
+      if (!diet) {
         return res.status(404).json({ msg: "Diet not found" });
       }
 
-      if (post.user.toString() !== req.user.id) {
+      if (diet.madeBy.userID.toString() !== req.user.id) {
         return res.status(500).json({ msg: "Unauthorized" })
       }
 
-      let removeIndex = user.diets.find(({ diet }) => diet === req.params.postid)
-
-      user.diets.splice(removeIndex, 1)
+      user.diets = user.diets.filter(({ diet }) => diet.toString() !== req.params.dietId)
 
       await user.save()
 
@@ -120,20 +130,14 @@ router.delete(
   }
 )
 
-// PUT api/workouts/:name/:did
+// PUT api/diets/:did
 // Edit a diet
 // Private route
 
 router.put(
-  "/:name/:did",
+  "/:dietId",
   [
     auth,
-    check("name", "Please enter a diet name")
-      .notEmpty(),
-    check("macros", "Please enter some valid details about the diet")
-      .notEmpty(),
-    check("food", "Please enter some food in your diet")
-      .notEmpty()
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -142,18 +146,12 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, macros, food } = req.body
+    const { dietName, allMeals } = req.body
 
     try {
-      let user = await User.findOne({ name: req.params.name })
+      let diet = await Diet.findById(req.params.dietId);
 
-      if (!user) {
-        return res.status(404).json({ msg: "User not found" })
-      }
-
-      let diet = await Diet.findById(req.params.did);
-
-      if (!workout) {
+      if (!diet) {
         return res.status(404).json({ msg: "Diet not found" });
       }
 
@@ -161,8 +159,8 @@ router.put(
         return res.status(500).json({ msg: "Unauthorized" })
       }
 
-      let newDiet = await Diet.findByIdAndUpdate(req.params.did,
-        { name, macros, food }, { new: true });
+      let newDiet = await Diet.findByIdAndUpdate(req.params.dietId,
+        { dietName, allMeals }, { new: true });
 
       res.json(newDiet)
     } catch (err) {
