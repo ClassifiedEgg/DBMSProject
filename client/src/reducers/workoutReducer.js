@@ -31,7 +31,7 @@ export default function (state = initialState, action) {
     case DELETE_WORKOUT:
       return {
         ...state,
-        allWorkouts: state.allWorkouts.filter(({ workout: { _id } }) => _id !== payload)
+        allWorkouts: state.allWorkouts.filter(({ _id }) => _id !== payload)
       }
     default:
       return state;

@@ -1,8 +1,10 @@
 import React, { useEffect, Fragment, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
+import { escapeRegExp, filter } from 'lodash'
 
-import { Container, Card, Grid, Header, Pagination, Icon } from 'semantic-ui-react'
+import WorkoutCard from './WorkoutCard'
+
+import { Container, Grid, Pagination, Search, Header } from 'semantic-ui-react'
 
 import { connect } from 'react-redux'
 import { getAllWorkouts, deleteWorkout } from '../../actions/workout'
@@ -10,69 +12,63 @@ import { getAllWorkouts, deleteWorkout } from '../../actions/workout'
 const Workouts = ({ allWorkouts, loading, getAllWorkouts, deleteWorkout }) => {
   useEffect(() => { getAllWorkouts() }, [])
 
+  useEffect(() => setDisplayWorkouts([...allWorkouts]), [allWorkouts])
+
   const [activePage, setActivePage] = useState(1)
 
+  const [displayWorkouts, setDisplayWorkouts] = useState([])
 
-  return (
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    setSearchLoading(true)
+
+    const re = new RegExp(escapeRegExp(search), 'i')
+    const isMatch = (result) => re.test(result.workoutName)
+
+    setDisplayWorkouts(filter(allWorkouts, isMatch))
+    setSearchLoading(false)
+  }, [search, allWorkouts])
+
+  return !loading && allWorkouts !== null ? (
     <Container fluid>
-      <Grid columns={4} style={{ minHeight: '70vh' }}>
+      <Grid centered={true}>
+        <Search
+          resultRenderer={() => null}
+          showNoResults={false}
+          loading={searchLoading}
+          onSearchChange={(e, { value }) => setSearch(value)}
+          value={search}
+          placeholder='Search for Workouts'
+          style={{ padding: '1% 0%' }}
+        />
+      </Grid>
+      <Grid columns={4} style={{ minHeight: '60vh' }}>
         {
-          allWorkouts.map(({ workout: { workoutName, date, allExercises, _id } }, idx) => {
-            if (idx >= (activePage - 1) * 4 && idx < activePage * 4) {
-              return (
-                <Grid.Column key={idx}>
-                  <Card>
-                    <Card.Content>
-                      <Card.Header>
-                        <Grid columns={3}>
-                          <Grid.Column width={11}>{workoutName}</Grid.Column>
-                          <Grid.Column width={2}><Link to={`/workouts/edit/${_id}`}>
-                            <Icon
-                              style={{ opacity: '0.5' }}
-                              onMouseEnter={(e) => e.target.style.opacity = 0.95}
-                              onMouseLeave={(e) => e.target.style.opacity = 0.5}
-                              name='edit'
-                              color='blue' />
-                          </Link>
-                          </Grid.Column>
-                          <Grid.Column width={2}><Link>
-                            <Icon
-                              style={{ opacity: '0.5' }}
-                              onMouseEnter={(e) => e.target.style.opacity = 0.85}
-                              onMouseLeave={(e) => e.target.style.opacity = 0.5}
-                              onClick={() => {
-                                deleteWorkout(_id)
-                                setActivePage(Math.ceil((allWorkouts.length - 1) / 4))
-                              }}
-                              name='trash alternate'
-                              color='red' />
-                          </Link>
-                          </Grid.Column>
-                        </Grid>
-                      </Card.Header>
-                      <Card.Meta>{date}</Card.Meta>
-                      <Card.Description>
-                        <Grid columns={2}>
-                          <Grid.Row>
-                            <Grid.Column width={10}><Header as='h3'>Exercise Name</Header></Grid.Column>
-                            <Grid.Column width={4}><Header as='h3'>Reps</Header></Grid.Column>
-                          </Grid.Row>
-                          {
-                            allExercises.map(({ name, reps }, idx) => (
-                              <Grid.Row key={idx}>
-                                <Grid.Column style={{ fontSize: '1.5rem' }}> {name}</Grid.Column>
-                                <Grid.Column textAlign='center' style={{ fontSize: '1.5rem' }}>x{reps}</Grid.Column>
-                              </Grid.Row>
-                            ))
-                          }
-                        </Grid>
-                      </Card.Description>
-                    </Card.Content>
-                  </Card>
-                </Grid.Column>
-              )
-            }
-          })
+          displayWorkouts.length > 0 ?
+            displayWorkouts.map(({ workoutName, date, allExercises, _id }, idx) => {
+              if (idx >= (activePage - 1) * 4 && idx < activePage * 4) {
+                return (
+                  <WorkoutCard
+                    key={idx}
+                    id={_id}
+                    date={date}
+                    mainText={workoutName}
+                    list={allExercises}
+                    noOfPages={displayWorkouts.length}
+                    deleteWorkout={deleteWorkout}
+                    setActivePage={setActivePage}
+                  />
+                )
+              }
+            })
+            :
+            <Grid columns={1} verticalAlign='middle' centered={true}>
+              <Grid.Column>
+                <Header as='h3' textAlign='center'>No workouts to show :(</Header>
+              </Grid.Column>
+            </Grid>
         }
       </Grid>
       <Grid textAlign='center'>
@@ -84,11 +80,11 @@ const Workouts = ({ allWorkouts, loading, getAllWorkouts, deleteWorkout }) => {
           firstItem={null}
           lastItem={null}
           onPageChange={(e, { activePage }) => (setActivePage(activePage))}
-          totalPages={Math.ceil(allWorkouts.length / 4)}
+          totalPages={Math.ceil(displayWorkouts.length / 4)}
         />
       </Grid>
     </Container>
-  )
+  ) : 'Loading'
 }
 
 Workouts.propTypes = {

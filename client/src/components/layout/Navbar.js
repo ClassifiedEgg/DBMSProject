@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Link, Redirect } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { Button, Dropdown, Menu, Icon, Header } from 'semantic-ui-react'
 import { connect } from 'react-redux'
@@ -30,7 +30,7 @@ const Navbar = ({ isAuthenticated, logoutUser }) => {
         (<Menu.Menu position='right'>
           <Menu.Item>
             <Link to='/workouts/new' style={{ textDecoration: 'none', color: 'inherit' }}>
-              <Button primary>
+              <Button color='violet'>
                 New Workout
             </Button>
             </Link>
@@ -38,14 +38,14 @@ const Navbar = ({ isAuthenticated, logoutUser }) => {
 
           <Menu.Item>
             <Link to='/diets/new' style={{ textDecoration: 'none', color: 'inherit' }}>
-              <Button primary>
+              <Button color='violet'>
                 New Diet
             </Button>
             </Link>
           </Menu.Item>
           <Menu.Item>
             <Link>
-              <Button primary onClick={() => logoutUser()}>Sign Out</Button>
+              <Button color='violet' onClick={() => logoutUser()}>Sign Out</Button>
             </Link>
           </Menu.Item>
         </Menu.Menu>) :
@@ -53,7 +53,7 @@ const Navbar = ({ isAuthenticated, logoutUser }) => {
         (<Menu.Menu position='right'>
           <Menu.Item>
             <Link to='/login' style={{ textDecoration: 'none', color: 'inherit' }}>
-              <Button primary>
+              <Button color='violet'>
                 Sign In
             </Button>
             </Link>
@@ -61,7 +61,7 @@ const Navbar = ({ isAuthenticated, logoutUser }) => {
 
           <Menu.Item>
             <Link to='/register' style={{ textDecoration: 'none', color: 'inherit' }}>
-              <Button primary>
+              <Button color='violet'>
                 Sign Up
             </Button>
             </Link>

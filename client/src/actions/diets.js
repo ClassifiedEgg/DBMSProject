@@ -10,10 +10,8 @@ export const getAllDiets = () => async dispatch => {
 
     dispatch({
       type: GET_DIETS,
-      payload: res.data
+      payload: res.data.map(({ diet }) => diet)
     })
-
-    console.log(res.data)
   } catch (err) {
     // dispatch(dietError())
     console.error(err.message)

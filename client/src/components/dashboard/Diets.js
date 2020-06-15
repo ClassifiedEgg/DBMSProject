@@ -1,8 +1,10 @@
-import React, { useEffect, Fragment, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
+import { escapeRegExp, filter } from 'lodash'
 
-import { Container, Card, Grid, Header, Pagination, Icon } from 'semantic-ui-react'
+import DietCard from './DietCard'
+
+import { Container, Grid, Pagination, Search, Header } from 'semantic-ui-react'
 
 import { connect } from 'react-redux'
 import { getAllDiets, deleteDiet } from '../../actions/diets'
@@ -10,68 +12,61 @@ import { getAllDiets, deleteDiet } from '../../actions/diets'
 const Diets = ({ allDiets, loading, getAllDiets, deleteDiet }) => {
   useEffect(() => { getAllDiets() }, [])
 
+  useEffect(() => setDisplayDiets([...allDiets]), [allDiets])
+
   const [activePage, setActivePage] = useState(1)
 
-  return  (
+  const [displayDiets, setDisplayDiets] = useState([])
+
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    setSearchLoading(true)
+
+    const re = new RegExp(escapeRegExp(search), 'i')
+    const isMatch = (result) => re.test(result.dietName)
+
+    setDisplayDiets(filter(allDiets, isMatch))
+    setSearchLoading(false)
+  }, [search, allDiets])
+
+  return !loading && allDiets !== null ? (
     <Container fluid>
-      <Grid columns={4} style={{ minHeight: '70vh' }}>
+      <Grid centered={true}>
+        <Search
+          resultRenderer={() => null}
+          showNoResults={false}
+          loading={searchLoading}
+          onSearchChange={(e, { value }) => setSearch(value)}
+          value={search}
+          placeholder='Search for Diets'
+          style={{ padding: '1% 0%' }}
+        />
+      </Grid>
+      <Grid columns={4} style={{ minHeight: '60vh' }}>
         {
-          allDiets.map(({ diet: { dietName, date, allMeals, _id } }, idx) => {
-            if (idx >= (activePage - 1) * 4 && idx < activePage * 4) {
-              return (
-                <Grid.Column>
-                  <Card>
-                    <Card.Content>
-                      <Card.Header>
-                        <Grid columns={3}>
-                          <Grid.Column width={11}>{dietName}</Grid.Column>
-                          <Grid.Column width={2}><Link to={`/diets/edit/${_id}`}>
-                            <Icon
-                              style={{ opacity: '0.5' }}
-                              onMouseEnter={(e) => e.target.style.opacity = 0.95}
-                              onMouseLeave={(e) => e.target.style.opacity = 0.5}
-                              name='edit'
-                              color='blue' />
-                          </Link>
-                          </Grid.Column>
-                          <Grid.Column width={2}><Link>
-                            <Icon
-                              style={{ opacity: '0.5' }}
-                              onMouseEnter={(e) => e.target.style.opacity = 0.85}
-                              onMouseLeave={(e) => e.target.style.opacity = 0.5}
-                              onClick={() => {
-                                deleteDiet(_id)
-                                setActivePage(Math.ceil((allDiets.length - 1) / 4))
-                              }}
-                              name='trash alternate'
-                              color='red' />
-                          </Link>
-                          </Grid.Column>
-                        </Grid>
-                      </Card.Header>
-                      <Card.Meta>{date}</Card.Meta>
-                      <Card.Description>
-                        <Grid columns={2}>
-                          <Grid.Row>
-                            <Grid.Column width={10}><Header as='h3'>Meal</Header></Grid.Column>
-                            <Grid.Column width={4}><Header as='h3'>kCal</Header></Grid.Column>
-                          </Grid.Row>
-                          {
-                            allMeals.map(({ name, kcal }, idx) => (
-                              <Grid.Row>
-                                <Grid.Column style={{ fontSize: '1.5rem' }}> {name}</Grid.Column>
-                                <Grid.Column textAlign='center' style={{ fontSize: '1.5rem' }}>{kcal}</Grid.Column>
-                              </Grid.Row>
-                            ))
-                          }
-                        </Grid>
-                      </Card.Description>
-                    </Card.Content>
-                  </Card>
-                </Grid.Column>
-              )
-            }
-          })
+          displayDiets.length > 0 ?
+            displayDiets.map(({ dietName, date, allMeals, _id }, idx) => {
+              if (idx >= (activePage - 1) * 4 && idx < activePage * 4) {
+                return <DietCard
+                  key={idx}
+                  dietName={dietName}
+                  date={date}
+                  allMeals={allMeals}
+                  id={_id}
+                  noOfPages={displayDiets.length}
+                  deleteDiet={deleteDiet}
+                  setActivePage={setActivePage}
+                />
+              }
+            })
+            :
+            <Grid columns={1} verticalAlign='middle' centered={true}>
+              <Grid.Column>
+                <Header as='h3' textAlign='center'>No diets to show :(</Header>
+              </Grid.Column>
+            </Grid>
         }
       </Grid>
       <Grid textAlign='center'>
@@ -83,15 +78,20 @@ const Diets = ({ allDiets, loading, getAllDiets, deleteDiet }) => {
           firstItem={null}
           lastItem={null}
           onPageChange={(e, { activePage }) => (setActivePage(activePage))}
-          totalPages={Math.ceil(allDiets.length / 4)}
+          totalPages={Math.ceil(displayDiets.length / 4)}
         />
       </Grid>
     </Container>
   )
+    :
+    'Loading'
 }
 
 Diets.propTypes = {
-
+  allDiets: PropTypes.array.isRequired,
+  loading: PropTypes.bool.isRequired,
+  getAllDiets: PropTypes.func.isRequired,
+  deleteDiet: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => ({

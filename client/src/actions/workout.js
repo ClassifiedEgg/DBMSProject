@@ -10,7 +10,7 @@ export const getAllWorkouts = () => async dispatch => {
 
     dispatch({
       type: GET_WORKOUTS,
-      payload: res.data
+      payload: res.data.map(({workout}) => workout)
     })
   } catch (err) {
     // dispatch(workoutError())
@@ -89,11 +89,14 @@ export const editWorkout = (workouts, wkId) => async dispatch => {
 export const deleteWorkout = (wkId) => async dispatch => {
   try {
     const res = await axios.delete(`/api/workouts/${wkId}`)
+    console.log(res)
 
     dispatch({
       type: DELETE_WORKOUT,
       payload: wkId
     })
+
+    console.log('deleted')
   } catch (err) {
     // dispatch(workoutError())
     console.error(err.message)

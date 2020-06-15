@@ -31,7 +31,7 @@ export default function (state = initialState, action) {
     case DELETE_DIET:
       return {
         ...state,
-        allDiets: state.allDiets.filter(({ diet: { _id } }) => _id !== payload)
+        allDiets: state.allDiets.filter(({ _id }) => _id !== payload)
       }
     default:
       return state;

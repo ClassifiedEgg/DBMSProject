@@ -5,15 +5,20 @@ import { Container, Grid, Image, Header, Icon, Button } from 'semantic-ui-react'
 
 import logo from '../../assets/fitness.svg'
 
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 
-const Landing = props => {
+const Landing = ({ isAuthenticated, loading }) => {
+
+  if (!loading && isAuthenticated) {
+    return <Redirect to='/dashboard' />
+  }
+
   return (
     <Container style={{ marginTop: '5%' }}>
       <Grid columns={2}>
         <Grid.Column style={{ paddingRight: '10%' }}>
-          <Header as='h1' style={{ marginBottom: '5%', color:'#6435c9' }}>
+          <Header as='h1' style={{ marginBottom: '5%', color: '#6435c9' }}>
             <Icon name='weight' size='massive' />
             <Header.Content style={{ fontSize: '4rem' }} >Fitty</Header.Content>
           </Header>
@@ -31,7 +36,13 @@ const Landing = props => {
 }
 
 Landing.propTypes = {
-
+  isAuthenticated: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
 }
 
-export default Landing
+const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated,
+  loading: state.auth.loading
+})
+
+export default connect(mapStateToProps, {})(Landing)

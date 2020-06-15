@@ -16,9 +16,6 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
     password: "",
   });
 
-  console.log(formData)
-  console.log(renders)
-
   const onChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value })
 

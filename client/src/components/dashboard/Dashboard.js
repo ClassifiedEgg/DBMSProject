@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
 
 import Workouts from './Workouts'
 import Diets from './Diets'
@@ -34,10 +33,6 @@ const Dashboard = props => {
 
     </Container>
   )
-}
-
-Dashboard.propTypes = {
-
 }
 
 export default Dashboard
