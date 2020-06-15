@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import validator from 'validator'
 
 import { registerUser } from '../../actions/auth'
 
-import { Form, Input, Container, Header, Select } from 'semantic-ui-react'
+import { Form, Input, Container, Header, Select, Message, Transition, Divider } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 
@@ -15,6 +16,10 @@ const Register = ({ registerUser, isAuthenticated }) => {
     { key: 'o', text: 'Other', value: 'Other' },
   ]
 
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [errorList, setErrorList] = useState([])
+  const [showError, setShowError] = useState(false)
+
   const [formData, setFormData] = useState({
     username: "",
     firstName: "",
@@ -22,15 +27,70 @@ const Register = ({ registerUser, isAuthenticated }) => {
     email: "",
     password: "",
     gender: "",
+    height: "",
+    weight: "",
     age: ""
   });
 
   const onChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value })
 
+  useEffect(() => {
+    if (errorList.length > 0) {
+      setShowError(true)
+    } else {
+      setShowError(false)
+      registerUser(formData)
+    }
+  }, [errorList])
+
   const onSubmit = e => {
     e.preventDefault()
-    registerUser(formData);
+    setErrorList([])
+
+    if (!validator.isLength(formData.username, { max: 16 }) || !validator.isAlphanumeric(formData.username)) {
+      formData.username.length > 16 ?
+        setErrorList(arr => [...arr, 'Please make sure your Username is not longer than 16 characters']) :
+        setErrorList(arr => [...arr, 'Please make sure your Username does not contain any special characters'])
+    }
+
+    if (!validator.isLength(formData.firstName, { max: 16 }) || !validator.isAlpha(formData.firstName)) {
+      formData.firstName.length > 16 ?
+        setErrorList(arr => [...arr, 'Please make sure your First Name is not longer than 16 characters']) :
+        setErrorList(arr => [...arr, 'Please make sure your First Name only contains characters'])
+    }
+
+    if (!validator.isLength(formData.lastName, { max: 16 }) || !validator.isAlpha(formData.lastName)) {
+      formData.lastName.length > 16 ?
+        setErrorList(arr => [...arr, 'Please make sure your Last Name is not longer than 16 characters']) :
+        setErrorList(arr => [...arr, 'Please make sure your Last Name only contains characters'])
+    }
+    
+    if (!validator.isLength(formData.password, { max: 16 }) || !validator.isAlphanumeric(formData.password)) {
+      formData.lastName.length > 16 ?
+        setErrorList(arr => [...arr, 'Please make sure your Password is not longer than 16 characters']) :
+        setErrorList(arr => [...arr, 'Please make sure your Password does not contain any special characters'])
+    }
+
+    if (validator.isEmpty(formData.height)) {
+      setErrorList(arr => [...arr, 'Please enter your height'])
+    }
+
+    if (validator.isEmpty(formData.weight)) {
+      setErrorList(arr => [...arr, 'Please enter your weight'])
+    }
+
+    if (validator.isEmpty(formData.age)) {
+      setErrorList(arr => [...arr, 'Please enter your age'])
+    }
+
+    if (validator.isEmail(formData.gender)) {
+      setErrorList(arr => [...arr, 'Please enter a valid gender'])
+    }
+
+    if (formData.password !== confirmPassword) {
+      setErrorList(arr => [...arr, 'Please makes sure your passwords match'])
+    }
   }
 
   if (isAuthenticated) {
@@ -39,6 +99,16 @@ const Register = ({ registerUser, isAuthenticated }) => {
 
   return (
     <Container>
+
+      {showError ?
+        <Message
+          error
+          header='There was some errors with your submission'
+          list={errorList}
+        />
+        :
+        null
+      }
 
       <Header as='h1'>Register</Header>
 
@@ -137,6 +207,7 @@ const Register = ({ registerUser, isAuthenticated }) => {
             type='password'
             label='Confirm Password'
             placeholder='Confirm Password'
+            onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </Form.Group>
 
@@ -146,6 +217,8 @@ const Register = ({ registerUser, isAuthenticated }) => {
           onClick={(e) => onSubmit(e)}
         />
       </Form>
+
+      <Divider hidden />
     </Container>
   )
 }

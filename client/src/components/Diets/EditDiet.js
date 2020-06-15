@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
+import LoadingSpinner from '../layout/LoadingSpinner'
+
 import { Container, Header, Grid, Input, Icon, Button } from 'semantic-ui-react'
 
 import { useParams } from 'react-router-dom'
@@ -61,7 +63,7 @@ const NewDiet = ({ editDiet, getDiet, currDiet, loading }) => {
     editDiet({ dietName, allMeals }, dietId)
   }
 
-  return loading === false && currDiet !== null ?(
+  return !loading && currDiet !== null ? (
     <Container>
       <Header as='h1' textAlign='center' >Edit Existing Diet</Header>
 
@@ -148,7 +150,7 @@ const NewDiet = ({ editDiet, getDiet, currDiet, loading }) => {
 
       </Grid>
     </Container>
-  ) : 'Loading'
+  ) : <LoadingSpinner />
 }
 
 NewDiet.propTypes = {

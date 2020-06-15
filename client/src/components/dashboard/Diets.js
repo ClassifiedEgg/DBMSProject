@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { escapeRegExp, filter } from 'lodash'
 
 import DietCard from './DietCard'
+import LoadingSpinner from '../layout/LoadingSpinner'
 
 import { Container, Grid, Pagination, Search, Header } from 'semantic-ui-react'
 
@@ -82,9 +83,7 @@ const Diets = ({ allDiets, loading, getAllDiets, deleteDiet }) => {
         />
       </Grid>
     </Container>
-  )
-    :
-    'Loading'
+  ) : <LoadingSpinner />
 }
 
 Diets.propTypes = {
@@ -96,7 +95,7 @@ Diets.propTypes = {
 
 const mapStateToProps = state => ({
   allDiets: state.diets.allDiets,
-  loading: state.diets.loding
+  loading: state.diets.loading
 })
 
 export default connect(mapStateToProps, { getAllDiets, deleteDiet })(Diets)

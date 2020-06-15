@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
+import LoadingSpinner from '../layout/LoadingSpinner'
+
 import { Container, Header, Grid, Input, Icon, Button } from 'semantic-ui-react'
 
 import { useParams } from 'react-router-dom'
@@ -148,7 +150,7 @@ const NewWorkout = ({ editWorkout, getWorkout, currWorkout, loading }) => {
 
       </Grid>
     </Container>
-  ) : 'Loading'
+  ) : <LoadingSpinner />
 }
 
 NewWorkout.propTypes = {

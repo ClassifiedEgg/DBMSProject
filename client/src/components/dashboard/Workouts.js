@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { escapeRegExp, filter } from 'lodash'
 
 import WorkoutCard from './WorkoutCard'
+import LoadingSpinner from '../layout/LoadingSpinner'
 
 import { Container, Grid, Pagination, Search, Header } from 'semantic-ui-react'
 
@@ -30,6 +31,8 @@ const Workouts = ({ allWorkouts, loading, getAllWorkouts, deleteWorkout }) => {
     setDisplayWorkouts(filter(allWorkouts, isMatch))
     setSearchLoading(false)
   }, [search, allWorkouts])
+
+  console.log(loading)
 
   return !loading && allWorkouts !== null ? (
     <Container fluid>
@@ -84,7 +87,7 @@ const Workouts = ({ allWorkouts, loading, getAllWorkouts, deleteWorkout }) => {
         />
       </Grid>
     </Container>
-  ) : 'Loading'
+  ) : <LoadingSpinner />
 }
 
 Workouts.propTypes = {
@@ -96,7 +99,7 @@ Workouts.propTypes = {
 
 const mapStateToProps = state => ({
   allWorkouts: state.workouts.allWorkouts,
-  loading: state.workouts.loding
+  loading: state.workouts.loading
 })
 
 export default connect(mapStateToProps, { getAllWorkouts, deleteWorkout })(Workouts)

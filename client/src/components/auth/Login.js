@@ -1,35 +1,66 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import validator from 'validator'
 
-import { Form, Input, Container, Header } from 'semantic-ui-react'
-import { connect } from 'react-redux'
+import LoadingSpinner from '../layout/LoadingSpinner'
+
+import { Form, Input, Container, Header, Message } from 'semantic-ui-react'
+
 import { Redirect } from 'react-router'
 
 import { loginUser } from '../../actions/auth'
+import { connect } from 'react-redux'
 
 const Login = ({ loading, isAuthenticated, loginUser }) => {
 
-  const renders = useRef(0)
+  const [errorList, setErrorList] = useState([])
+  const [showError, setShowError] = useState(false)
 
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
 
+  useEffect(() => {
+    if (errorList.length > 0) {
+      setShowError(true)
+    } else {
+      setShowError(false)
+      loginUser(formData)
+    }
+  }, [errorList])
+
   const onChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value })
 
   const onSubmit = e => {
     e.preventDefault()
-    loginUser(formData);
+    setErrorList([])
+
+    if (validator.isEmpty(formData.username)) {
+      setErrorList(arr => [...arr, 'Please enter your username'])
+    }
+    if (validator.isEmpty(formData.password)) {
+      setErrorList(arr => [...arr, 'Please enter your password'])
+    }
   }
 
   if (isAuthenticated) {
     return <Redirect to="/dashboard" />
   }
 
-  return loading ? ('Loading') : (
+  return !loading ? (
     <Container>
+
+      {showError ?
+        <Message
+          error
+          header='There was some errors with your submission'
+          list={errorList}
+        />
+        :
+        null
+      }
 
       <Header as='h1'>Login</Header>
 
@@ -61,7 +92,7 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
         />
       </Form>
     </Container>
-  )
+  ) : <LoadingSpinner />
 }
 
 Login.propTypes = {
