@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { escapeRegExp, filter } from 'lodash'
+import { Helmet } from 'react-helmet'
 
 import DietCard from './DietCard'
 import LoadingSpinner from '../layout/LoadingSpinner'
@@ -34,6 +35,12 @@ const Diets = ({ allDiets, loading, getAllDiets, deleteDiet }) => {
 
   return !loading && allDiets !== null ? (
     <Container fluid>
+
+      <Helmet>
+        <title>Dashboard - Diets</title>
+        <meta name="description" content="Showing all diets"></meta>
+      </Helmet>
+
       <Grid centered={true}>
         <Search
           resultRenderer={() => null}
@@ -45,6 +52,7 @@ const Diets = ({ allDiets, loading, getAllDiets, deleteDiet }) => {
           style={{ padding: '1% 0%' }}
         />
       </Grid>
+
       <Grid columns={4} style={{ minHeight: '60vh' }}>
         {
           displayDiets.length > 0 ?

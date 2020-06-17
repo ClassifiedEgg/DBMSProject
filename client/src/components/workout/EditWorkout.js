@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { Helmet } from 'react-helmet'
 
 import LoadingSpinner from '../layout/LoadingSpinner'
 
@@ -63,8 +64,14 @@ const NewWorkout = ({ editWorkout, getWorkout, currWorkout, loading }) => {
     editWorkout({ workoutName, allExercises }, wkId)
   }
 
-  return loading === false && currWorkout !== null ?(
+  return loading === false && currWorkout !== null ? (
     <Container>
+
+      <Helmet>
+        <title>Workout - Edit Workout</title>
+        <meta name="description" content="Edit an existing Workout"></meta>
+      </Helmet>
+
       <Header as='h1' textAlign='center' >Add New Workout</Header>
 
       <Grid style={{ padding: '0% 15%' }}>

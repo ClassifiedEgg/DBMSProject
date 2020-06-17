@@ -1,6 +1,7 @@
 import React, { useEffect, Fragment, useState } from 'react'
 import PropTypes from 'prop-types'
 import { escapeRegExp, filter } from 'lodash'
+import { Helmet } from 'react-helmet'
 
 import WorkoutCard from './WorkoutCard'
 import LoadingSpinner from '../layout/LoadingSpinner'
@@ -34,6 +35,12 @@ const Workouts = ({ allWorkouts, loading, getAllWorkouts, deleteWorkout }) => {
 
   return !loading && allWorkouts !== null ? (
     <Container fluid>
+
+      <Helmet>
+        <title>Dashboard - Workouts</title>
+        <meta name="description" content="Showing all workouts"></meta>
+      </Helmet>
+
       <Grid centered={true}>
         <Search
           resultRenderer={() => null}
@@ -45,6 +52,7 @@ const Workouts = ({ allWorkouts, loading, getAllWorkouts, deleteWorkout }) => {
           style={{ padding: '1% 0%' }}
         />
       </Grid>
+
       <Grid columns={4} style={{ minHeight: '60vh' }}>
         {
           displayWorkouts.length > 0 ?

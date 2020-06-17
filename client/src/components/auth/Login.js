@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import PropTypes from 'prop-types'
 import validator from 'validator'
+import { Helmet } from 'react-helmet'
 
 import LoadingSpinner from '../layout/LoadingSpinner'
 
@@ -17,7 +18,7 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
 
   useLayoutEffect(() => {
     console.log('render')
-    if(firstRender.current === true){
+    if (firstRender.current === true) {
       firstRender.current = false
       return
     }
@@ -53,7 +54,7 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
       setErrorList(arr => [...arr, 'Please enter your password'])
     }
 
-    if(firstRender.current === false){
+    if (firstRender.current === false) {
       loginUser(formData)
     }
   }
@@ -64,6 +65,11 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
 
   return !loading ? (
     <Container>
+
+      <Helmet>
+        <title>Login</title>
+        <meta name="description" content="Login to Fitty"></meta>
+      </Helmet>
 
       {showError ?
         <Message

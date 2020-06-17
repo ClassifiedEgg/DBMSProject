@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import validator from 'validator'
+import { Helmet } from 'react-helmet'
 
 import { registerUser } from '../../actions/auth'
 
@@ -65,7 +66,7 @@ const Register = ({ registerUser, isAuthenticated }) => {
         setErrorList(arr => [...arr, 'Please make sure your Last Name is not longer than 16 characters']) :
         setErrorList(arr => [...arr, 'Please make sure your Last Name only contains characters'])
     }
-    
+
     if (!validator.isLength(formData.password, { max: 16 }) || !validator.isAlphanumeric(formData.password)) {
       formData.lastName.length > 16 ?
         setErrorList(arr => [...arr, 'Please make sure your Password is not longer than 16 characters']) :
@@ -99,6 +100,11 @@ const Register = ({ registerUser, isAuthenticated }) => {
 
   return (
     <Container>
+
+      <Helmet>
+        <title>Register</title>
+        <meta name="description" content="Register for Fitty"></meta>
+      </Helmet>
 
       {showError ?
         <Message

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { Helmet } from 'react-helmet'
 
 import LoadingSpinner from '../layout/LoadingSpinner'
 
@@ -65,6 +66,12 @@ const NewDiet = ({ editDiet, getDiet, currDiet, loading }) => {
 
   return !loading && currDiet !== null ? (
     <Container>
+
+      <Helmet>
+        <title>Diet - Edit Diet</title>
+        <meta name="description" content="Edit an existing Diet"></meta>
+      </Helmet>
+
       <Header as='h1' textAlign='center' >Edit Existing Diet</Header>
 
       <Grid style={{ padding: '0% 15%' }}>

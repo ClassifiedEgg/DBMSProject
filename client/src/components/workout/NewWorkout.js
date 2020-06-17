@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { Helmet } from 'react-helmet'
 
 import { Container, Header, Grid, Input, Icon, Button } from 'semantic-ui-react'
 
@@ -48,6 +49,12 @@ const NewWorkout = ({ makeNewWorkout }) => {
 
   return (
     <Container>
+
+      <Helmet>
+        <title>Workout - New Workout</title>
+        <meta name="description" content="Add a new Workout"></meta>
+      </Helmet>
+
       <Header as='h1' textAlign='center' >Add New Workout</Header>
 
       <Grid style={{ padding: '0% 15%' }}>
