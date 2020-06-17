@@ -1,4 +1,4 @@
-import { LOGIN_SUCCESS, LOGOUT_USER, REGISTER_SUCCESS, USER_LOADED, AUTH_ERROR } from '../actions/types'
+import { LOGIN_SUCCESS, LOGOUT_USER, REGISTER_SUCCESS, USER_LOADED, AUTH_ERROR, NO_TOKEN } from '../actions/types'
 
 const initialState = {
   token: localStorage.getItem("token"),
@@ -29,6 +29,7 @@ export default function (state = initialState, action) {
       };
     case LOGOUT_USER:
     case AUTH_ERROR:
+    case NO_TOKEN:
       localStorage.removeItem("token");
       return {
         ...state,

@@ -1,12 +1,15 @@
 import axios from 'axios'
 import setAuthToken from '../utils/setAuthToken'
 
-import { USER_LOADED, REGISTER_SUCCESS, LOGIN_SUCCESS, LOGOUT_USER, AUTH_ERROR } from './types'
+import { USER_LOADED, REGISTER_SUCCESS, LOGIN_SUCCESS, LOGOUT_USER, AUTH_ERROR, NO_TOKEN } from './types'
 
 // Loads user into the store
 export const loadUser = () => async dispatch => {
   if (localStorage.token) {
     setAuthToken(localStorage.token)
+  } else {
+    dispatch({ type: NO_TOKEN })
+    return
   }
 
   try {
@@ -17,8 +20,11 @@ export const loadUser = () => async dispatch => {
       payload: res.data
     })
   } catch (err) {
-    dispatch({ type: AUTH_ERROR })
-    console.error(err.message)
+    dispatch({
+      type: AUTH_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
+    console.log(err.data)
   }
 }
 
@@ -39,7 +45,10 @@ export const registerUser = (formData) => async dispatch => {
 
     dispatch(loadUser())
   } catch (err) {
-    // dispatch(authError())
+    dispatch({
+      type: AUTH_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 }
@@ -61,7 +70,10 @@ export const loginUser = (formData) => async dispatch => {
 
     dispatch(loadUser())
   } catch (err) {
-    // dispatch(authError())
+    dispatch({
+      type: AUTH_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 }

@@ -1,17 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Moment from 'react-moment'
 
-import { Grid, Icon, Card, Header } from 'semantic-ui-react'
+import { Grid, Icon, Card, Header, Modal, Button } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 
-const WorkoutCard = ({ id, date, mainText, list, deleteWorkout, setActivePage, noOfPages }) => {
+const WorkoutCard = ({ id, date, workoutName, exercises, deleteWorkout, setActivePage, noOfPages }) => {
+
+  const [modalOpen, setModalOpen] = useState(false)
+
   return (
     <Grid.Column>
       <Card>
         <Card.Content>
           <Card.Header>
             <Grid columns={3}>
-              <Grid.Column width={11}>{mainText}</Grid.Column>
+              <Grid.Column width={11}>{workoutName}</Grid.Column>
               <Grid.Column width={2}><Link to={`/workouts/edit/${id}`}>
                 <Icon
                   style={{ opacity: '0.5' }}
@@ -22,16 +25,39 @@ const WorkoutCard = ({ id, date, mainText, list, deleteWorkout, setActivePage, n
               </Link>
               </Grid.Column>
               <Grid.Column width={2}><Link>
-                <Icon
-                  style={{ opacity: '0.5' }}
-                  onMouseEnter={(e) => e.target.style.opacity = 0.85}
-                  onMouseLeave={(e) => e.target.style.opacity = 0.5}
-                  onClick={() => {
-                    deleteWorkout(id)
-                    setActivePage(Math.ceil((noOfPages - 1) / 4) === 0 ? 1 : Math.ceil((noOfPages - 1) / 4))
-                  }}
-                  name='trash alternate'
-                  color='red' />
+                <Modal
+                  trigger={
+                    <Icon
+                      style={{ opacity: '0.5' }}
+                      onMouseEnter={(e) => e.target.style.opacity = 0.85}
+                      onMouseLeave={(e) => e.target.style.opacity = 0.5}
+                      onClick={() => setModalOpen(true)}
+                      name='trash alternate'
+                      color='red' />
+                  }
+                  open={modalOpen}
+                  onClose={(e) => setModalOpen(false)}
+                  basic
+                  size='small'>
+                  <Header icon='th list' content={`Delete ${workoutName}`} />
+                  <Modal.Content>
+                    <h3>Are you sure you want to delete this workout?</h3>
+                  </Modal.Content>
+                  <Modal.Actions>
+                    <Button color='red' onClick={() => setModalOpen(false)} inverted>
+                      No
+                    </Button>
+                    <Button color='green' onClick={() => {
+                      deleteWorkout(id)
+                      setActivePage(Math.ceil((noOfPages - 1) / 4) === 0 ? 1 : Math.ceil((noOfPages - 1) / 4))
+                      setModalOpen(false)
+                    }}
+                      inverted>
+                      Yes
+                    </Button>
+                  </Modal.Actions>
+                </Modal>
+
               </Link>
               </Grid.Column>
             </Grid>
@@ -44,7 +70,7 @@ const WorkoutCard = ({ id, date, mainText, list, deleteWorkout, setActivePage, n
                 <Grid.Column width={4}><Header as='h3'>Reps</Header></Grid.Column>
               </Grid.Row>
               {
-                list.map(({ name, reps }, idxList) => (
+                exercises.map(({ name, reps }, idxList) => (
                   <Grid.Row key={idxList}>
                     <Grid.Column style={{ fontSize: '1.5rem' }}>{name}</Grid.Column>
                     <Grid.Column textAlign='center' style={{ fontSize: '1.5rem' }}>x{reps}</Grid.Column>

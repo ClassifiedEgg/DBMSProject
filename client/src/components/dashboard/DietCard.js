@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Moment from 'react-moment'
 
-import { Grid, Icon, Card, Header } from 'semantic-ui-react'
+import { Grid, Icon, Card, Header, Modal, Button } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 
-const DietCard = ({  id, date, dietName, allMeals, deleteDiet, setActivePage, noOfPages }) => {
+const DietCard = ({ id, date, dietName, allMeals, deleteDiet, setActivePage, noOfPages }) => {
+
+  const [modalOpen, setModalOpen] = useState(false)
+
   return (
     <Grid.Column>
       <Card>
@@ -22,16 +25,38 @@ const DietCard = ({  id, date, dietName, allMeals, deleteDiet, setActivePage, no
               </Link>
               </Grid.Column>
               <Grid.Column width={2}><Link>
-                <Icon
-                  style={{ opacity: '0.5' }}
-                  onMouseEnter={(e) => e.target.style.opacity = 0.85}
-                  onMouseLeave={(e) => e.target.style.opacity = 0.5}
-                  onClick={() => {
-                    deleteDiet(id)
-                    setActivePage(Math.ceil((noOfPages - 1) / 4))
-                  }}
-                  name='trash alternate'
-                  color='red' />
+                <Modal
+                  trigger={
+                    <Icon
+                      style={{ opacity: '0.5' }}
+                      onMouseEnter={(e) => e.target.style.opacity = 0.85}
+                      onMouseLeave={(e) => e.target.style.opacity = 0.5}
+                      onClick={() => setModalOpen(true)}
+                      name='trash alternate'
+                      color='red' />
+                  }
+                  open={modalOpen}
+                  onClose={(e) => setModalOpen(false)}
+                  basic
+                  size='small'>
+                  <Header icon='food' content={`Delete ${dietName}`} />
+                  <Modal.Content>
+                    <h3>Are you sure you want to delete this diet?</h3>
+                  </Modal.Content>
+                  <Modal.Actions>
+                    <Button color='red' onClick={() => setModalOpen(false)} inverted>
+                      No
+                    </Button>
+                    <Button color='green' onClick={() => {
+                      deleteDiet(id)
+                      setActivePage(Math.ceil((noOfPages - 1) / 4) === 0 ? 1 : Math.ceil((noOfPages - 1) / 4))
+                      setModalOpen(false)
+                    }}
+                      inverted>
+                      Yes
+                    </Button>
+                  </Modal.Actions>
+                </Modal>
               </Link>
               </Grid.Column>
             </Grid>

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import history from '../history'
 
-import { GET_DIETS, GET_DIET, NEW_DIET, EDIT_DIET, DELETE_DIET } from './types'
+import { GET_DIETS, GET_DIET, NEW_DIET, EDIT_DIET, DELETE_DIET, DIET_ERROR, SUCCESS_MSG } from './types'
 
 // Get all diets for user
 export const getAllDiets = () => async dispatch => {
@@ -13,7 +13,10 @@ export const getAllDiets = () => async dispatch => {
       payload: res.data.map(({ diet }) => diet)
     })
   } catch (err) {
-    // dispatch(dietError())
+    dispatch({
+      type: DIET_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 }
@@ -28,7 +31,10 @@ export const getDiet = (dietId) => async dispatch => {
       payload: res.data
     })
   } catch (err) {
-    // dispatch(dietError())
+    dispatch({
+      type: DIET_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 }
@@ -52,8 +58,16 @@ export const makeNewDiet = (formData) => async dispatch => {
     })
 
     history.push('/dashboard')
+
+    dispatch({
+      type: SUCCESS_MSG,
+      payload: 'Created Diet successfully'
+    })
   } catch (err) {
-    // dispatch(dietError())
+    dispatch({
+      type: DIET_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 }
@@ -78,9 +92,18 @@ export const editDiet = (formData, dietId) => async dispatch => {
         diet: res.data
       }
     })
+
     history.push('/dashboard')
+
+    dispatch({
+      type: SUCCESS_MSG,
+      payload: 'Edited Diet successfully'
+    })
   } catch (err) {
-    // dispatch(wrokoutError())
+    dispatch({
+      type: DIET_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 }
@@ -94,8 +117,16 @@ export const deleteDiet = (dietId) => async dispatch => {
       type: DELETE_DIET,
       payload: dietId
     })
+
+    dispatch({
+      type: SUCCESS_MSG,
+      payload: 'Deleted Diet successfully'
+    })
   } catch (err) {
-    // dispatch(dietError())
+    dispatch({
+      type: DIET_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 } 

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import history from '../history'
 
-import { GET_WORKOUT, GET_WORKOUTS, NEW_WORKOUT, EDIT_WORKOUT, DELETE_WORKOUT } from './types'
+import { GET_WORKOUT, GET_WORKOUTS, NEW_WORKOUT, EDIT_WORKOUT, DELETE_WORKOUT, WORKOUT_ERROR, SUCCESS_MSG } from './types'
 
 // Get all workouts for user
 export const getAllWorkouts = () => async dispatch => {
@@ -10,10 +10,13 @@ export const getAllWorkouts = () => async dispatch => {
 
     dispatch({
       type: GET_WORKOUTS,
-      payload: res.data.map(({workout}) => workout)
+      payload: res.data.map(({ workout }) => workout)
     })
   } catch (err) {
-    // dispatch(workoutError())
+    dispatch({
+      type: WORKOUT_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 }
@@ -28,7 +31,10 @@ export const getWorkout = (wkId) => async dispatch => {
       payload: res.data
     })
   } catch (err) {
-    // dispatch(workoutError())
+    dispatch({
+      type: WORKOUT_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 }
@@ -52,8 +58,17 @@ export const makeNewWorkout = (formData) => async dispatch => {
     })
 
     history.push('/dashboard')
+
+    dispatch({
+      type: SUCCESS_MSG,
+      payload: 'Created Workout successfully'
+    })
+
   } catch (err) {
-    // dispatch(workoutError())
+    dispatch({
+      type: WORKOUT_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 }
@@ -78,9 +93,18 @@ export const editWorkout = (workouts, wkId) => async dispatch => {
         workout: res.data
       }
     })
+
     history.push('/dashboard')
+
+    dispatch({
+      type: SUCCESS_MSG,
+      payload: 'Edited Workout successfully'
+    })
   } catch (err) {
-    // dispatch(wrokoutError())
+    dispatch({
+      type: WORKOUT_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 }
@@ -96,9 +120,15 @@ export const deleteWorkout = (wkId) => async dispatch => {
       payload: wkId
     })
 
-    console.log('deleted')
+    dispatch({
+      type: SUCCESS_MSG,
+      payload: 'Deleted Workout successfully'
+    })
   } catch (err) {
-    // dispatch(workoutError())
+    dispatch({
+      type: WORKOUT_ERROR,
+      payload: err.response.data.errors[0].msg
+    })
     console.error(err.message)
   }
 } 

@@ -54,13 +54,13 @@ router.post(
 
             // See if user exists
             if (!user) {
-                return res.status(404).json({ errors: [{ msg: "Please check username and password" }] })
+                return res.status(404).json({ errors: [{ msg: "Invalid username and password combination" }] })
             }
 
             const isMatch = await bcrpyt.compare(password, user.password);
 
             if (!isMatch) {
-                return res.status(404).json({ errors: [{ msg: "Please check username and password" }] })
+                return res.status(404).json({ errors: [{ msg: "Invalid username and password combination" }] })
             }
 
             // Return payload

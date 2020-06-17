@@ -13,6 +13,7 @@ import EditWorkout from './components/workout/EditWorkout';
 import NewDiet from './components/Diets/NewDiet';
 import EditDiet from './components/Diets/EditDiet';
 import Landing from './components/layout/Landing';
+import Alert from './components/layout/Alert';
 
 
 import { Provider } from 'react-redux'
@@ -35,6 +36,7 @@ const App = () => {
       <Router history={history}>
         <Fragment>
           <Navbar />
+          <Alert />
           <Switch>
             <Route exact path='/' component={Landing} />
             <Route exact path='/login' component={Login} />

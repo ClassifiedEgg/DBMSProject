@@ -144,7 +144,7 @@ const NewWorkout = ({ editWorkout, getWorkout, currWorkout, loading }) => {
         <Grid.Row columns={2}>
           <Grid.Column width={2} />
           <Grid.Column textAlign='left'>
-            <Button content='Create Workout' icon='th list' labelPosition='right' color='green' onClick={onSubmit} />
+            <Button content='Edit Workout' icon='th list' labelPosition='right' color='green' onClick={onSubmit} />
           </Grid.Column>
         </Grid.Row>
 

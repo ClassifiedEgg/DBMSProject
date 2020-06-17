@@ -15,11 +15,11 @@ router.post(
     "/",
     [
         check("username", "Please enter a valid username")
-            .notEmpty(),
+            .notEmpty().trim(),
         check("firstName", "Please enter a valid first name")
-            .notEmpty(),
+            .notEmpty().trim(),
         check("lastName", "Please enter a valid lasy name")
-            .notEmpty(),
+            .notEmpty().trim(),
         check("age", "Please enter a valid age")
             .notEmpty().isFloat({ min: 0 }),
         check("gender", "Please choose a gender")
@@ -29,9 +29,10 @@ router.post(
         check("height", "Please enter a valid height")
             .notEmpty().isFloat({ min: 0 }),
         check("email", "Please enter a valid email")
-            .notEmpty().isEmail(),
+            .notEmpty().normalizeEmail().isEmail(),
         check("password", "Please enter a vlaid pasword (between 6-8 characters)")
             .notEmpty()
+            .trim()
             .isLength({ min: 8, max: 16 })
     ],
     async (req, res) => {

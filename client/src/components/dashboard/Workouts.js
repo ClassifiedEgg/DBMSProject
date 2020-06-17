@@ -32,8 +32,6 @@ const Workouts = ({ allWorkouts, loading, getAllWorkouts, deleteWorkout }) => {
     setSearchLoading(false)
   }, [search, allWorkouts])
 
-  console.log(loading)
-
   return !loading && allWorkouts !== null ? (
     <Container fluid>
       <Grid centered={true}>
@@ -57,13 +55,15 @@ const Workouts = ({ allWorkouts, loading, getAllWorkouts, deleteWorkout }) => {
                     key={idx}
                     id={_id}
                     date={date}
-                    mainText={workoutName}
-                    list={allExercises}
+                    workoutName={workoutName}
+                    exercises={allExercises}
                     noOfPages={displayWorkouts.length}
                     deleteWorkout={deleteWorkout}
                     setActivePage={setActivePage}
                   />
                 )
+              } else {
+                return
               }
             })
             :

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import PropTypes from 'prop-types'
 import validator from 'validator'
 
@@ -13,6 +13,16 @@ import { connect } from 'react-redux'
 
 const Login = ({ loading, isAuthenticated, loginUser }) => {
 
+  const firstRender = useRef(true)
+
+  useLayoutEffect(() => {
+    console.log('render')
+    if(firstRender.current === true){
+      firstRender.current = false
+      return
+    }
+  })
+
   const [errorList, setErrorList] = useState([])
   const [showError, setShowError] = useState(false)
 
@@ -26,7 +36,6 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
       setShowError(true)
     } else {
       setShowError(false)
-      loginUser(formData)
     }
   }, [errorList])
 
@@ -42,6 +51,10 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
     }
     if (validator.isEmpty(formData.password)) {
       setErrorList(arr => [...arr, 'Please enter your password'])
+    }
+
+    if(firstRender.current === false){
+      loginUser(formData)
     }
   }
 
