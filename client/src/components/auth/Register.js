@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import PropTypes from 'prop-types'
 import validator from 'validator'
 import { Helmet } from 'react-helmet'
@@ -10,6 +10,16 @@ import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 
 const Register = ({ registerUser, isAuthenticated }) => {
+
+  const firstRender = useRef(true)
+
+  useLayoutEffect(() => {
+    console.log('render')
+    if (firstRender.current === true) {
+      firstRender.current = false
+      return
+    }
+  })
 
   const genderOptions = [
     { key: 'm', text: 'Male', value: 'Male' },
@@ -41,7 +51,6 @@ const Register = ({ registerUser, isAuthenticated }) => {
       setShowError(true)
     } else {
       setShowError(false)
-      registerUser(formData)
     }
   }, [errorList])
 
@@ -91,6 +100,10 @@ const Register = ({ registerUser, isAuthenticated }) => {
 
     if (formData.password !== confirmPassword) {
       setErrorList(arr => [...arr, 'Please makes sure your passwords match'])
+    }
+
+    if (firstRender.current === false) {
+      registerUser(formData)
     }
   }
 
