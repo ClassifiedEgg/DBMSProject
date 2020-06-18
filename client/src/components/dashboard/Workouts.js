@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { escapeRegExp, filter } from 'lodash'
 import { Helmet } from 'react-helmet'
@@ -71,7 +71,7 @@ const Workouts = ({ allWorkouts, loading, getAllWorkouts, deleteWorkout }) => {
                   />
                 )
               } else {
-                return
+                return null
               }
             })
             :

@@ -36,7 +36,7 @@ router.post(
     [
         check("username", "Please enter a valid username")
             .notEmpty(),
-        check("password", "Please enter a vlaid pasword")
+        check("password", "Please enter a valid pasword")
             .notEmpty()
             .exists()
     ],

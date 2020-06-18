@@ -72,7 +72,7 @@ const NewWorkout = ({ editWorkout, getWorkout, currWorkout, loading }) => {
         <meta name="description" content="Edit an existing Workout"></meta>
       </Helmet>
 
-      <Header as='h1' textAlign='center' >Add New Workout</Header>
+      <Header as='h1' textAlign='center' >Edit Workout</Header>
 
       <Grid style={{ padding: '0% 15%' }}>
         <Grid.Row columns={2}>

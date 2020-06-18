@@ -69,7 +69,7 @@ const Diets = ({ allDiets, loading, getAllDiets, deleteDiet }) => {
                   setActivePage={setActivePage}
                 />
               } else {
-                return
+                return null
               }
             })
             :

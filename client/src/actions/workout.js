@@ -112,8 +112,7 @@ export const editWorkout = (workouts, wkId) => async dispatch => {
 // Delete a Workout
 export const deleteWorkout = (wkId) => async dispatch => {
   try {
-    const res = await axios.delete(`/api/workouts/${wkId}`)
-    console.log(res)
+    await axios.delete(`/api/workouts/${wkId}`)
 
     dispatch({
       type: DELETE_WORKOUT,

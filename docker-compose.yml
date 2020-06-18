@@ -1,0 +1,29 @@
+version: "3"
+services:
+    client:
+        container_name: react_client
+        build:
+            context: ./client
+        expose: 
+          - 3000
+        ports:
+            - "3000:3000"
+        volumes:
+          - ./client:/usr/src/app/client
+        stdin_open: true
+    server:
+        container_name: node_serevr
+        build:
+            context: ./server
+        expose: 
+          - 5000
+        ports:
+            - "5000:5000"
+        volumes:
+            - ./server:/usr/src/app/server
+        stdin_open: true
+    mongo:
+      container_name: mongo
+      image: mongo
+      ports: 
+        - '27018:27017'

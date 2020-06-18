@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet'
 
 import { registerUser } from '../../actions/auth'
 
-import { Form, Input, Container, Header, Select, Message, Transition, Divider } from 'semantic-ui-react'
+import { Form, Input, Container, Header, Select, Message, Divider } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 
@@ -14,7 +14,6 @@ const Register = ({ registerUser, isAuthenticated }) => {
   const firstRender = useRef(true)
 
   useLayoutEffect(() => {
-    console.log('render')
     if (firstRender.current === true) {
       firstRender.current = false
       return
@@ -102,9 +101,10 @@ const Register = ({ registerUser, isAuthenticated }) => {
       setErrorList(arr => [...arr, 'Please makes sure your passwords match'])
     }
 
-    if (firstRender.current === false) {
+    if (firstRender.current === false && showError === false) {
       registerUser(formData)
     }
+
   }
 
   if (isAuthenticated) {
@@ -129,7 +129,11 @@ const Register = ({ registerUser, isAuthenticated }) => {
         null
       }
 
+      <Divider hidden />
+
       <Header as='h1'>Register</Header>
+
+      <Divider hidden />
 
       <Form>
         <Form.Group widths='equal'>

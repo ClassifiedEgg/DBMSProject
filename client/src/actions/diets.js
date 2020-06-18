@@ -111,7 +111,7 @@ export const editDiet = (formData, dietId) => async dispatch => {
 // Delete a diet
 export const deleteDiet = (dietId) => async dispatch => {
   try {
-    const res = await axios.delete(`/api/diets/${dietId}`)
+    await axios.delete(`/api/diets/${dietId}`)
 
     dispatch({
       type: DELETE_DIET,

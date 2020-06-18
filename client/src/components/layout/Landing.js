@@ -32,7 +32,7 @@ const Landing = ({ isAuthenticated, loading }) => {
             <p style={{ fontSize: '1.6rem' }}>Always had ideas for your workouts and diets but never a place to keep them together?</p>
             <p style={{ fontSize: '1.6rem' }}>We got you covered now!</p>
             <p style={{ fontSize: '1.6rem' }}>Sign Up to start getting in shape :)</p>
-            <Link to='/register'><Button color='violet'>Make an Accont</Button></Link>
+            <Link to='/register'><Button color='violet'>Make an Acount</Button></Link>
           </Grid.Column>
           <Grid.Column>
             <Image src={logo} fluid />

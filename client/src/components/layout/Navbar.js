@@ -2,23 +2,23 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import { Button, Dropdown, Menu, Icon, Header } from 'semantic-ui-react'
+import { Button, Menu, Icon } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
 import { logoutUser } from '../../actions/auth'
 
-const Navbar = ({ isAuthenticated, logoutUser }) => {
+const Navbar = ({ isAuthenticated, logoutUser, username }) => {
   return (
     <Menu size='large' borderless>
 
       <Menu.Item>
         {
           isAuthenticated ? (
-            <Link to='/dashboard' style={{color:'#6435c9'}} >
+            <Link to='/dashboard' style={{ color: '#6435c9' }} >
               <Icon name='weight' size='big' /> Fitty
             </Link>
           ) : (
-              <Link to='/' style={{color:'#6435c9'}} >
+              <Link to='/' style={{ color: '#6435c9' }} >
                 <Icon name='weight' size='big' /> Fitty
               </Link>
             )
@@ -79,7 +79,8 @@ Navbar.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated
+  isAuthenticated: state.auth.isAuthenticated,
+  username: state.auth.user,
 })
 
 export default connect(mapStateToProps, { logoutUser })(Navbar)

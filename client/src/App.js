@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect } from 'react';
-import './App.css'
 
 import { Router, Route, Switch } from "react-router-dom";
 import history from './history'
@@ -11,8 +10,8 @@ import Login from './components/auth/Login';
 import Dashboard from './components/dashboard/Dashboard';
 import NewWorkout from './components/workout/NewWorkout';
 import EditWorkout from './components/workout/EditWorkout';
-import NewDiet from './components/Diets/NewDiet';
-import EditDiet from './components/Diets/EditDiet';
+import NewDiet from './components/diet/NewDiet';
+import EditDiet from './components/diet/EditDiet';
 import Landing from './components/layout/Landing';
 import Alert from './components/layout/Alert';
 

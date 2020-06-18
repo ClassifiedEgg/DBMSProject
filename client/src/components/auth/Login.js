@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet'
 
 import LoadingSpinner from '../layout/LoadingSpinner'
 
-import { Form, Input, Container, Header, Message } from 'semantic-ui-react'
+import { Form, Input, Container, Header, Message, Divider } from 'semantic-ui-react'
 
 import { Redirect } from 'react-router'
 
@@ -17,7 +17,6 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
   const firstRender = useRef(true)
 
   useLayoutEffect(() => {
-    console.log('render')
     if (firstRender.current === true) {
       firstRender.current = false
       return
@@ -54,7 +53,7 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
       setErrorList(arr => [...arr, 'Please enter your password'])
     }
 
-    if (firstRender.current === false) {
+    if (firstRender.current === false && showError === false) {
       loginUser(formData)
     }
   }
@@ -64,7 +63,7 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
   }
 
   return !loading ? (
-    <Container>
+    <Container style={{ height: '100%' }}>
 
       <Helmet>
         <title>Login</title>
@@ -81,7 +80,11 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
         null
       }
 
+      <Divider hidden />
+
       <Header as='h1'>Login</Header>
+
+      <Divider hidden />
 
       <Form>
         <Form.Field
@@ -91,7 +94,7 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
           placeholder='Username'
           name='username'
           onChange={onChange}
-          width='nine'
+          width={7}
         />
 
         <Form.Field
@@ -101,7 +104,7 @@ const Login = ({ loading, isAuthenticated, loginUser }) => {
           placeholder='Password'
           name='password'
           onChange={onChange}
-          width='nine'
+          width={7}
         />
 
         <Form.Button

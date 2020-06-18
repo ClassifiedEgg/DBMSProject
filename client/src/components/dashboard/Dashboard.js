@@ -9,7 +9,7 @@ const Dashboard = props => {
   const [activeTab, setActiveTab] = useState('workouts')
   return (
     <Container>
-      <Header as='h1' textAlign='center'>Dashbaord</Header>
+      <Header as='h1' textAlign='center'>Dashboard</Header>
       <Grid centered columns={2}>
         <Grid.Column textAlign='center'>
           <Button
