@@ -1,6 +1,12 @@
 const express = require('express')
+const { graphqlHTTP } = require('express-graphql');
 const connectDB = require("./config/db")
 const path = require('path')
+
+const GraphQLSchema = require('./graphql/schema')
+const GraphQLResolvers = require('./graphql/resolvers')
+
+const auth = require('./middleware/auth')
 
 const app = express()
 
@@ -9,12 +15,27 @@ connectDB();
 
 // Init Middleware
 app.use(express.json({ extended: false }));
+app.use(auth)
 
-// Defint routes
-app.use("/api/users", require('./routes/api/users'))
-app.use("/api/auth", require('./routes/api/auth'))
-app.use("/api/workouts", require('./routes/api/workout'))
-app.use("/api/diets", require('./routes/api/diet'))
+//GraphQL
+app.use('/graphql', graphqlHTTP({
+    schema: GraphQLSchema,
+    rootValue: GraphQLResolvers,
+    graphiql: true,
+    customFormatErrorFn: (err) => {
+        const data = err.originalError.data || ['Server Error']
+        const code = err.originalError.statusCode || 500
+        const message = err.message || 'Server Error'
+
+        return { message, data, code }
+    }
+}))
+
+// Define routes
+// app.use("/api/users", require('./routes/api/users'))
+// app.use("/api/auth", require('./routes/api/auth'))
+// app.use("/api/workouts", require('./routes/api/workout'))
+// app.use("/api/diets", require('./routes/api/diet'))
 
 
 // Serve static assets in production

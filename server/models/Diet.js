@@ -1,4 +1,3 @@
-// cals and macros, bf, dinner, lunhc, snacks, drinks, water, date, 
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 

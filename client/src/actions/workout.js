@@ -5,17 +5,43 @@ import { GET_WORKOUT, GET_WORKOUTS, NEW_WORKOUT, EDIT_WORKOUT, DELETE_WORKOUT, W
 
 // Get all workouts for user
 export const getAllWorkouts = () => async dispatch => {
-  try {
-    const res = await axios.get(`/api/workouts/`)
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
 
+  let graphqlQuery = {
+    query: `
+    {
+      getWorkouts {
+        _id
+        workout {
+          _id
+          workoutName
+          allExercises {
+            name
+            reps
+          }
+          date
+        }
+      }
+    }
+    `
+  }
+
+  const body = JSON.stringify(graphqlQuery)
+
+  try {
+    const res = await axios.post(`/graphql`, body, config)
     dispatch({
       type: GET_WORKOUTS,
-      payload: res.data.map(({ workout }) => workout)
+      payload: res.data.data.getWorkouts.map(({ workout }) => workout)
     })
   } catch (err) {
     dispatch({
       type: WORKOUT_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }
@@ -23,17 +49,41 @@ export const getAllWorkouts = () => async dispatch => {
 
 // Get one workout from user
 export const getWorkout = (wkId) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  let graphqlQuery = {
+    query: `
+    {
+      getWorkout(wkId: "${wkId}") {
+        _id
+        workoutName
+        allExercises {
+          name
+          reps
+        }
+        date
+      }
+    }
+    `
+  }
+
+  const body = JSON.stringify(graphqlQuery)
+
   try {
-    const res = await axios.get(`/api/workouts/${wkId}`)
+    const res = await axios.post(`/graphql`, body, config)
 
     dispatch({
       type: GET_WORKOUT,
-      payload: res.data
+      payload: res.data.data.getWorkout
     })
   } catch (err) {
     dispatch({
       type: WORKOUT_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }
@@ -43,18 +93,36 @@ export const getWorkout = (wkId) => async dispatch => {
 export const makeNewWorkout = (formData) => async dispatch => {
   const config = {
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     }
   }
 
-  const body = JSON.stringify(formData)
+  formData.allExercises = formData.allExercises.map(({ name, reps }) => ({ name, reps: parseFloat(reps) }))
+
+  let graphqlQuery = {
+    query: `
+    mutation CreateANewWorkout($formData: NewWorkoutInput!) {
+      makeNewWorkout(userInput: $formData) {
+        _id
+        workoutName
+        allExercises {
+          name
+          reps
+        }
+        date
+      }
+    }
+    `
+  }
+
+  const body = JSON.stringify({ query: graphqlQuery.query, variables: { formData } })
 
   try {
-    const res = await axios.post(`/api/workouts`, body, config)
+    const res = await axios.post(`/graphql`, body, config)
 
     dispatch({
       type: NEW_WORKOUT,
-      payload: res.data
+      payload: res.data.data.makeNewWorkout
     })
 
     history.push('/dashboard')
@@ -67,30 +135,48 @@ export const makeNewWorkout = (formData) => async dispatch => {
   } catch (err) {
     dispatch({
       type: WORKOUT_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }
 }
 
 // Edit a workout
-export const editWorkout = (workouts, wkId) => async dispatch => {
+export const editWorkout = (formData, wkId) => async dispatch => {
   const config = {
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     }
   }
 
-  const body = JSON.stringify(workouts)
+  formData.allExercises = formData.allExercises.map(({ name, reps }) => ({ name, reps: parseFloat(reps) }))
+
+  let graphqlQuery = {
+    query: `
+    mutation EditExistingWorkout($wkId: ID!, $formData: NewWorkoutInput!) {
+      editWorkout(wkId: $wkId, userInput: $formData) {
+        _id
+        workoutName
+        allExercises {
+          name
+          reps
+        }
+        date
+      }
+    }
+    `
+  }
+
+  const body = JSON.stringify({ query: graphqlQuery.query, variables: { formData, wkId } })
 
   try {
-    const res = await axios.put(`/api/workouts/${wkId}`, body, config)
+    const res = await axios.post(`/graphql`, body, config)
 
     dispatch({
       type: EDIT_WORKOUT,
       payload: {
         wkId,
-        workout: res.data
+        workout: res.data.data.editWorkout
       }
     })
 
@@ -103,7 +189,7 @@ export const editWorkout = (workouts, wkId) => async dispatch => {
   } catch (err) {
     dispatch({
       type: WORKOUT_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }
@@ -111,8 +197,24 @@ export const editWorkout = (workouts, wkId) => async dispatch => {
 
 // Delete a Workout
 export const deleteWorkout = (wkId) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  let graphqlQuery = {
+    query: `
+    mutation {
+      deleteWorkout(wkId: "${wkId}")
+    }
+    `
+  }
+
+  const body = JSON.stringify(graphqlQuery)
+  
   try {
-    await axios.delete(`/api/workouts/${wkId}`)
+    await axios.post(`/graphql`, body, config)
 
     dispatch({
       type: DELETE_WORKOUT,
@@ -126,7 +228,7 @@ export const deleteWorkout = (wkId) => async dispatch => {
   } catch (err) {
     dispatch({
       type: WORKOUT_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }

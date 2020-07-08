@@ -1,4 +1,3 @@
-// Name of the exercise, date, parts of the body worked on, cals burnt, reps, 
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 

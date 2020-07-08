@@ -5,17 +5,44 @@ import { GET_DIETS, GET_DIET, NEW_DIET, EDIT_DIET, DELETE_DIET, DIET_ERROR, SUCC
 
 // Get all diets for user
 export const getAllDiets = () => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  let graphqlQuery = {
+    query: `
+    {
+      getDiets {
+        _id
+        diet {
+          _id
+          dietName
+          allMeals {
+            name
+            kcal
+          }
+          date
+        }
+      }
+    }
+    `
+  }
+
+  const body = JSON.stringify(graphqlQuery)
+
   try {
-    const res = await axios.get(`/api/diets`)
+    const res = await axios.post(`/graphql`, body, config)
 
     dispatch({
       type: GET_DIETS,
-      payload: res.data.map(({ diet }) => diet)
+      payload: res.data.data.getDiets.map(({ diet }) => diet)
     })
   } catch (err) {
     dispatch({
       type: DIET_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }
@@ -23,17 +50,41 @@ export const getAllDiets = () => async dispatch => {
 
 // Get one diet from user
 export const getDiet = (dietId) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  let graphqlQuery = {
+    query: `
+    {
+      getDiet(dietId: "${dietId}") {
+        _id
+        workoutName
+        allMeals {
+          name
+          kcal
+        }
+        date
+      }
+    }
+    `
+  }
+
+  const body = JSON.stringify(graphqlQuery)
+
   try {
-    const res = await axios.get(`/api/diets/${dietId}`)
+    const res = await axios.post(`/graphql`, body, config)
 
     dispatch({
       type: GET_DIET,
-      payload: res.data
+      payload: res.data.data.getDiet
     })
   } catch (err) {
     dispatch({
       type: DIET_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }
@@ -43,18 +94,36 @@ export const getDiet = (dietId) => async dispatch => {
 export const makeNewDiet = (formData) => async dispatch => {
   const config = {
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     }
   }
 
-  const body = JSON.stringify(formData)
+  formData.allMeals = formData.allMeals.map(({ name, kcal }) => ({ name, kcal: parseFloat(kcal) }))
+
+  let graphqlQuery = {
+    query: `
+    mutation CreateANewDiett($formData: NewDietInput!) {
+      makeNewDiet(userInput: $formData) {
+        _id
+        dietName
+        allMeals {
+          name
+          kcal
+        }
+        date
+      }
+    }
+    `
+  }
+
+  const body = JSON.stringify({ query: graphqlQuery.query, variables: { formData } })
 
   try {
-    const res = await axios.post(`/api/diets`, body, config)
+    const res = await axios.post(`/graphql`, body, config)
 
     dispatch({
       type: NEW_DIET,
-      payload: res.data
+      payload: res.data.data.makeNewDiet
     })
 
     history.push('/dashboard')
@@ -66,7 +135,7 @@ export const makeNewDiet = (formData) => async dispatch => {
   } catch (err) {
     dispatch({
       type: DIET_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }
@@ -76,20 +145,38 @@ export const makeNewDiet = (formData) => async dispatch => {
 export const editDiet = (formData, dietId) => async dispatch => {
   const config = {
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     }
   }
 
-  const body = JSON.stringify(formData)
+  formData.allMeals = formData.allMeals.map(({ name, kcal }) => ({ name, kcal: parseFloat(kcal) }))
+
+  let graphqlQuery = {
+    query: `
+    mutation EditExistingDiet($wkId: ID!, $formData: NewDietInput!) {
+      editDiet(dietId: $dietId, userInput: $formData) {
+        _id
+        dietName
+        allMeals {
+          name
+          kcal
+        }
+        date
+      }
+    }
+    `
+  }
+
+  const body = JSON.stringify({ query: graphqlQuery.query, variables: { formData, dietId } })
 
   try {
-    const res = await axios.put(`/api/diets/${dietId}`, body, config)
+    const res = await axios.post(`/graphql`, body, config)
 
     dispatch({
       type: EDIT_DIET,
       payload: {
         dietId,
-        diet: res.data
+        diet: res.data.data.editDiet
       }
     })
 
@@ -102,7 +189,7 @@ export const editDiet = (formData, dietId) => async dispatch => {
   } catch (err) {
     dispatch({
       type: DIET_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }
@@ -110,8 +197,26 @@ export const editDiet = (formData, dietId) => async dispatch => {
 
 // Delete a diet
 export const deleteDiet = (dietId) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  let graphqlQuery = {
+    query: `
+    mutation {
+      deleteDiet(dietId: "${dietId}")
+    }
+    `
+  }
+
+  const body = JSON.stringify(graphqlQuery)
+
+  console.log(dietId)
+
   try {
-    await axios.delete(`/api/diets/${dietId}`)
+    await axios.post(`/graphql`, body, config)
 
     dispatch({
       type: DELETE_DIET,
@@ -125,7 +230,7 @@ export const deleteDiet = (dietId) => async dispatch => {
   } catch (err) {
     dispatch({
       type: DIET_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }

@@ -7,19 +7,24 @@ module.exports = function (req, res, next) {
 
     // Check if token exists
     if (!token) {
-        return res.status(401).json({ msg: "Unauthorized" });
+        // return res.status(401).json({ msg: "Unauthorized" });
+        req.isAuth = false;
+        return next();
+        console.log('token')
     }
+
 
     // Verify token
     try {
-
         const decodedMsg = jwt.decode(token, 'mysecretkey');
-
+        
         req.user = decodedMsg.user;
+        req.isAuth = true
 
         next();
 
     } catch (err) {
-        res.status(401).json({ msg: "Not a valid token" });
+        // res.status(401).json({ msg: "Not a valid token" });
+        console.log(err)
     }
 }

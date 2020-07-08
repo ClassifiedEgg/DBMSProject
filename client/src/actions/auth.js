@@ -5,26 +5,55 @@ import { USER_LOADED, REGISTER_SUCCESS, LOGIN_SUCCESS, LOGOUT_USER, AUTH_ERROR, 
 
 // Loads user into the store
 export const loadUser = () => async dispatch => {
-  if (localStorage.token) {
+  if (localStorage.token && localStorage.token !== "null" && localStorage.token !== "undefined") {
     setAuthToken(localStorage.token)
   } else {
     dispatch({ type: NO_TOKEN })
     return
   }
 
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  let graphqlQuery = {
+    query: `
+    {
+      getUser {
+        firstName
+        lastName
+        weight
+        height
+        age
+        email
+        workouts {
+          _id
+        }
+        diets {
+          _id
+        }
+      }
+    }
+    `
+  }
+
+  const body = JSON.stringify(graphqlQuery)
+
   try {
-    const res = await axios.get('/api/auth')
+    const res = await axios.post('/graphql', body, config)
 
     dispatch({
       type: USER_LOADED,
-      payload: res.data
+      payload: res.data.data.getUser
     })
   } catch (err) {
     dispatch({
       type: AUTH_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
-    console.log(err.data)
+    console.error(err.message)
   }
 }
 
@@ -36,43 +65,64 @@ export const registerUser = (formData) => async dispatch => {
     }
   }
 
-  const body = JSON.stringify(formData)
+  let graphqlQuery = {
+    query: `
+      mutation RegisterAUser($formData: UserRegisterInput!) {
+        registerUser(userInput: $formData) {
+          token
+        }
+      }
+    `
+  }
+
+  const body = JSON.stringify({ query: graphqlQuery.query, variables: { formData } })
 
   try {
-    const res = await axios.post('/api/users', body, config)
+    const res = await axios.post('/graphql', body, config)
 
-    dispatch({ type: REGISTER_SUCCESS, payload: res.data })
+    dispatch({ type: REGISTER_SUCCESS, payload: res.data.data.registerUser.token })
 
     dispatch(loadUser())
   } catch (err) {
     dispatch({
       type: AUTH_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }
 }
 
 // Login user and load their data into the store
-export const loginUser = (formData) => async dispatch => {
+export const loginUser = ({ username, password }) => async dispatch => {
   const config = {
     headers: {
       'Content-Type': 'application/json'
     }
   }
 
-  const body = JSON.stringify(formData)
+
+  let graphqlQuery = {
+    query: `
+    {
+      loginUser(userInput: {username: "${username}", password: "${password}"}) {
+        token
+      }
+    }
+    `
+  }
+
+  const body = JSON.stringify(graphqlQuery)
 
   try {
-    const res = await axios.post('/api/auth', body, config)
+    const res = await axios.post('/graphql', body, config)
 
-    dispatch({ type: LOGIN_SUCCESS, payload: res.data })
+    dispatch({ type: LOGIN_SUCCESS, payload: res.data.data.loginUser.token })
 
     dispatch(loadUser())
   } catch (err) {
     dispatch({
       type: AUTH_ERROR,
-      payload: err.response.data.errors[0].msg
+      payload: err.response.data.errors[0].message
     })
     console.error(err.message)
   }
